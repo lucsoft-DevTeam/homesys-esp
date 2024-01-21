@@ -1,0 +1,6 @@
+<h1>Hey, its your HomeSYS-ESP!</h1>
+<span>Restart Count: <div hx-get="/stats/restart-count" hx-trigger="load">Loading...</div></span>
+<span>Node Id: <div hx-get="/stats/node-id" hx-trigger="load">Loading...</div></span>
+<form hx-delete="/wifi" hx-swap="outerHTML" hx-target="this">
+    <input type="submit" value="Reset">
+</form>
