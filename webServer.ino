@@ -2,6 +2,7 @@
 
 WebServer server(80);
 
+Ticker webServerTask;
 File fsUploadFile;
 
 void setupWebServer() {
@@ -18,10 +19,40 @@ void setupWebServer() {
   server.on("/stats/node-id", HTTP_GET, []() {
     server.send(200, "text/html", nodeId());
   });
+  server.on("/stats/dht/humidity", HTTP_GET, []() {
+    server.send(200, "text/html", String(dhtHumidity));
+  });
+  server.on("/stats/dht/temperature", HTTP_GET, []() {
+    server.send(200, "text/html", String(dhtTemperature));
+  });
+  server.on("/led/on", HTTP_POST, []() {
+    digitalWrite(LED_BUILTIN, HIGH);
+    okResponse();
+  });
+  server.on("/led/off", HTTP_POST, []() {
+    digitalWrite(LED_BUILTIN, LOW);
+    okResponse();
+  });
+  server.on("/cpu", HTTP_GET, []() {
+    server.send(200, "text/html", String(ESP.getCpuFreqMHz()));
+  });
+  server.on("/cpu/80", HTTP_POST, []() {
+    setCpuFrequencyMhz(80);
+    server.send(200, "text/html", "80");
+  });
+  server.on("/cpu/160", HTTP_POST, []() {
+    setCpuFrequencyMhz(160);
+    server.send(200, "text/html", "160");
+  });
+  server.on("/cpu/240", HTTP_POST, []() {
+    setCpuFrequencyMhz(240);
+    server.send(200, "text/html", "240");
+  });
   server.on("/wifi", HTTP_DELETE, []() {
     unsetStorage();
     readFile("/connect.html");
   });
+
   server.on("/wifi", HTTP_POST, []() {
     if (!server.hasArg("ssid") || server.arg("ssid").isEmpty()) {
       server.sendHeader("HX-Retarget", "#error-message");
@@ -43,13 +74,13 @@ void setupWebServer() {
     Serial.print("Wifi Status: ");
     Serial.println(status);
 
-    if(status == WL_NO_SSID_AVAIL) {
+    if (status == WL_NO_SSID_AVAIL) {
       server.sendHeader("HX-Retarget", "#error-message");
       server.sendHeader("HX-Reswap", "innerHTML");
       return server.send(200, "text/html", hError("Error: We couldn't find that Wifi name."));
     }
-    
-    if(status == WL_CONNECT_FAILED || status == WL_DISCONNECTED) {
+
+    if (status == WL_CONNECT_FAILED || status == WL_DISCONNECTED) {
       server.sendHeader("HX-Retarget", "#error-message");
       server.sendHeader("HX-Reswap", "innerHTML");
       return server.send(200, "text/html", hError("Error: Password was not accepted."));
@@ -98,6 +129,7 @@ void setupWebServer() {
         return;
       }
       if (upload.status == UPLOAD_FILE_WRITE) {
+        yield();
         fsUploadFile.write(upload.buf, upload.currentSize);
         return;
       }
@@ -132,6 +164,10 @@ void setupWebServer() {
     }
   });
   server.begin();
+
+  webServerTask.attach_ms(10, []() {
+    stepWebServer();
+  });
 }
 
 void okResponse() {

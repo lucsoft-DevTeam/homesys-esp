@@ -11,6 +11,7 @@ void setup() {
   Serial.println();
   Serial.println("Booting into HomeSYS-ESP");
   Serial.println(String("HomeSYS NodeID: ") + nodeId());
+  setupDeviceReader();
   setupStorage();
   setupFiles();
   WiFi.setHostname(nodeId().c_str());
@@ -22,14 +23,9 @@ void setup() {
   }
   setupWebServer();
   checkRequiredFilesExists();
-
   Serial.println("Starting Loop");
 }
 
 void loop() {
-  digitalWrite(LED_BUILTIN, HIGH);
-  stepWebServer();
-  stepDNS();
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(40);
+  delay(10);
 }

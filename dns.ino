@@ -1,13 +1,13 @@
 #include <DNSServer.h>
 
 const byte DNS_PORT = 53;
-IPAddress apIP(8,8,4,4); // The default android DNS
+IPAddress apIP(8, 8, 4, 4);  // The default android DNS
 DNSServer dnsServer;
+Ticker dnsTask;
 
 void setupDNS() {
   dnsServer.start(DNS_PORT, "*", apIP);
-}
-
-void stepDNS() {
-  dnsServer.processNextRequest();
+  dnsTask.attach_ms(300, []() {
+    dnsServer.processNextRequest();
+  });
 }

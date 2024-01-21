@@ -1,6 +1,16 @@
 <h1>Hey, its your HomeSYS-ESP!</h1>
+<span>Temperature: <br><span hx-get="/stats/dht/temperature" hx-trigger="load, every 4s">Loading...</span> °C</span>
+<span>Humidity: <br><span hx-get="/stats/dht/humidity" hx-trigger="load, every 4s">Loading...</span> %</span>
+<span>CPU: <br><span hx-get="/cpu" hx-trigger="load" id="cpu-info">Loading...</span> MHz</span>
 <span>Restart Count: <div hx-get="/stats/restart-count" hx-trigger="load">Loading...</div></span>
 <span>Node Id: <div hx-get="/stats/node-id" hx-trigger="load">Loading...</div></span>
+<div class="button-list">
+    <input hx-post="/led/on" type="submit" value="LED ON">
+    <input hx-post="/led/off" type="submit" value="LED OFF">
+    <input hx-post="/cpu/80" type="submit" hx-target="#cpu-info" value="CPU 80 Mhz">
+    <input hx-post="/cpu/160" type="submit" hx-target="#cpu-info" value="CPU 160 Mhz">
+    <input hx-post="/cpu/240" type="submit" hx-target="#cpu-info" value="CPU 240 Mhz">
+</div>
 <form hx-delete="/wifi" hx-swap="outerHTML" hx-target="this">
     <input type="submit" value="Reset">
 </form>

@@ -2,15 +2,14 @@
 #include <LittleFS.h>
 
 void setupFiles() {
-  if(!LittleFS.begin(true)){
+  if (!LittleFS.begin(true)) {
     Serial.println("An Error has occurred while mounting LittleFS");
     return;
   }
 }
 
 bool checkRequiredFilesExists() {
-  if(!LittleFS.exists("/index.html"))
-  {
+  if (!LittleFS.exists("/index.html")) {
     Serial.println("Missing index.html");
     return false;
   }
